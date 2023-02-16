@@ -29,6 +29,7 @@ model Order {
   quantity   Int?
   totalPrice Int?
   updatedAt  DateTime  @updatedAt
+  Sales      Sales?
 }
 
 model Customer {
@@ -54,6 +55,7 @@ model Address {
   state     String?
   updatedAt DateTime   @updatedAt
   zip       Int?
+  Sales     Sales[]
 }
 
 model Product {
@@ -64,4 +66,34 @@ model Product {
   name        String?
   orders      Order[]
   updatedAt   DateTime @updatedAt
+}
+
+model Sales {
+  id                String        @id @default(cuid())
+  order             Order?        @relation(fields: [orderId], references: [id])
+  orderId           String?       @unique
+  address           Address?      @relation(fields: [addressId], references: [id])
+  addressId         String?
+  paymentStatus     PaymentStatus @default(Pending)
+  paymentType       String?
+  transactionId     String?
+  transactionStatus String?
+  orderStatus       OrderStatus   @default(AwaitingFulfillment)
+  customerNote      String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+enum PaymentStatus {
+  Pending
+  Completed
+}
+
+enum OrderStatus {
+  AwaitingFulfillment
+  AwaitingShipment
+  AwaitingPickup
+  Completed
+  Shipped
+  Cancelled
 }
